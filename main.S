@@ -291,6 +291,7 @@ initViewWithFrame:
 ; x0: Selection String
 ; x1: UIColor
 ; x2: Action argument (2 reserved, 3 - UIControl)
+; x3: ColorIsWhite
 ; d0-d3: CGRect
 makeSelection:
 	sub sp,sp,#64
@@ -327,7 +328,7 @@ makeSelection:
 	bl _objc_msgSend
 	adrp x0,optionSelected@PAGE
 	add x0,x0,optionSelected@PAGEOFF
-	ldr x1,[sp,#32]
+	ldp x1,x2,[sp,#32]
 	ldr x3,[sp,#8]
 	bl makeUIAction
 	mov x2,x0
@@ -375,7 +376,7 @@ makeSelection:
 
 ; Arguments:
 ; x0 (w0): Letter
-; x1: reserved
+; x1: colorIsWhite
 ; x2: UIControl clicked
 optionSelected:
 	cmp x0,#0
@@ -387,6 +388,7 @@ optionSelected:
 .opts.create:
 	sub sp,sp,#32
 	stp x29,x30,[sp,#16]
+	strh w1,[sp,#12]
 	strh w0,[sp,#8]
 	mov x0,x2
 	adrp x1,sel_backgroundColor@PAGE
@@ -400,8 +402,9 @@ optionSelected:
 	ldp d2,d3,[x1]
 	mov x1,x0
 	add x0,sp,#8
+	ldrh w3,[sp,#12]
 	mov x2,#0
-	mov x3,#1
+	;mov x3,#1
 	bl makeSelection
 	str x0,[sp,#8]
 	ldr x0,[sp]
